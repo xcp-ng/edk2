@@ -34,6 +34,7 @@
   DEFINE BGRT_ENABLE             = TRUE
   DEFINE IPXE_ENABLE             = FALSE
   DEFINE XEN_VARIABLE_ENABLE     = FALSE
+  DEFINE EXTRA_MODULES_ENABLE    = TRUE
 
 !include OvmfPkg/OvmfTpmDefines.dsc.inc
 
@@ -168,7 +169,9 @@
   FileHandleLib|MdePkg/Library/UefiFileHandleLib/UefiFileHandleLib.inf
   UefiCpuLib|UefiCpuPkg/Library/BaseUefiCpuLib/BaseUefiCpuLib.inf
   SecurityManagementLib|MdeModulePkg/Library/DxeSecurityManagementLib/DxeSecurityManagementLib.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   UefiUsbLib|MdePkg/Library/UefiUsbLib/UefiUsbLib.inf
+!endif
   SerializeVariablesLib|OvmfPkg/Library/SerializeVariablesLib/SerializeVariablesLib.inf
   QemuFwCfgLib|OvmfPkg/Library/QemuFwCfgLib/QemuFwCfgDxeLib.inf
   QemuLoadImageLib|OvmfPkg/Library/GenericQemuLoadImageLib/GenericQemuLoadImageLib.inf
@@ -326,7 +329,9 @@
   DxeCoreEntryPoint|MdePkg/Library/DxeCoreEntryPoint/DxeCoreEntryPoint.inf
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
   ReportStatusCodeLib|MdeModulePkg/Library/DxeReportStatusCodeLib/DxeReportStatusCodeLib.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   UefiScsiLib|MdePkg/Library/UefiScsiLib/UefiScsiLib.inf
+!endif
   PciLib|OvmfPkg/Library/DxePciLibI440FxQ35/DxePciLibI440FxQ35.inf
 
 [LibraryClasses.common.DXE_DRIVER]
@@ -622,10 +627,12 @@
       NULL|OvmfPkg/Csm/LegacyBootMaintUiLib/LegacyBootMaintUiLib.inf
 !endif
   }
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   OvmfPkg/QemuKernelLoaderFsDxe/QemuKernelLoaderFsDxe.inf {
     <LibraryClasses>
       NULL|OvmfPkg/Library/BlobVerifierLibNull/BlobVerifierLibNull.inf
   }
+!endif
   OvmfPkg/XenIoPvhDxe/XenIoPvhDxe.inf
   OvmfPkg/XenIoPciDxe/XenIoPciDxe.inf
   OvmfPkg/XenBusDxe/XenBusDxe.inf
@@ -655,19 +662,23 @@
   MdeModulePkg/Universal/Disk/UnicodeCollation/EnglishDxe/EnglishDxe.inf
   FatPkg/EnhancedFatDxe/Fat.inf
   MdeModulePkg/Universal/Disk/UdfDxe/UdfDxe.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
   MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
   OvmfPkg/SataControllerDxe/SataControllerDxe.inf
   MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
   MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
   MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
+!endif
   MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
   MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
   MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
   MdeModulePkg/Universal/MemoryTest/NullMemoryTestDxe/NullMemoryTestDxe.inf
 
   OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
+!endif
 
   #
   # ISA Support
@@ -690,7 +701,9 @@
   #
   MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
   OvmfPkg/XenAcpiPlatformDxe/XenAcpiPlatformDxe.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
+!endif
   MdeModulePkg/Universal/Acpi/BootScriptExecutorDxe/BootScriptExecutorDxe.inf
 !if $(BGRT_ENABLE) == TRUE
   MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
@@ -716,12 +729,14 @@
   #
   # Usb Support
   #
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   MdeModulePkg/Bus/Pci/UhciDxe/UhciDxe.inf
   MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
   MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
   MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
   MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
   MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
+!endif
 
 !ifdef $(CSM_ENABLE)
   OvmfPkg/Csm/BiosThunk/VideoDxe/VideoDxe.inf {
@@ -770,10 +785,12 @@
   }
 
   OvmfPkg/PlatformDxe/Platform.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   OvmfPkg/AmdSevDxe/AmdSevDxe.inf {
     <LibraryClasses>
     PciLib|MdePkg/Library/BasePciLibCf8/BasePciLibCf8.inf
   }
+!endif
   OvmfPkg/IoMmuDxe/IoMmuDxe.inf
 
   #
