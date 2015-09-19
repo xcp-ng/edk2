@@ -31,6 +31,7 @@
   # -D FLAG=VALUE
   #
   DEFINE SOURCE_DEBUG_ENABLE     = FALSE
+  DEFINE IPXE_ENABLE             = FALSE
 
 !include OvmfPkg/OvmfTpmDefines.dsc.inc
 
