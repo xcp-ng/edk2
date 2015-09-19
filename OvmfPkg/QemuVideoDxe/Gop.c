@@ -66,7 +66,8 @@ QemuVideoCompleteModeData (
                     (VOID **)&FrameBufDesc
                     );
 
-  if (Private->Variant == QEMU_VIDEO_BOCHS_NVIDIA)
+  if (Private->Variant == QEMU_VIDEO_BOCHS_NVIDIA ||
+      Private->Variant == QEMU_VIDEO_BOCHS_INTEL)
     Mode->FrameBufferBase = ((EFI_PHYSICAL_ADDRESS)BochsRead (Private,
                                  VBE_DISPI_INDEX_LFB_ADDRESS_H)) << 16 |
                              BochsRead (Private, VBE_DISPI_INDEX_LFB_ADDRESS_L);
@@ -189,6 +190,7 @@ Routine Description:
       break;
     case QEMU_VIDEO_BOCHS_MMIO:
     case QEMU_VIDEO_BOCHS_NVIDIA:
+    case QEMU_VIDEO_BOCHS_INTEL:
     case QEMU_VIDEO_BOCHS:
       InitializeBochsGraphicsMode (Private, ModeData);
       break;
