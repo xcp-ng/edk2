@@ -14,6 +14,7 @@
 #include <Library/HobLib.h>
 #include <Library/PeiServicesLib.h>
 #include <Library/PcdLib.h>
+#include <Guid/MigratedFvInfo.h>
 
 /**
   Publish PEI & DXE (Decompressed) Memory based FVs to let PEI
@@ -27,6 +28,9 @@ PeiFvInitialization (
   VOID
   )
 {
+  EDKII_MIGRATED_FV_INFO  MigratedFvInfo;
+  UINT32                  ShadowPeiBase;
+
   DEBUG ((DEBUG_INFO, "Platform PEI Firmware Volume Initialization\n"));
 
   //
@@ -58,6 +62,38 @@ PeiFvInitialization (
     PcdGet32 (PcdOvmfDxeMemFvSize),
     EfiBootServicesData
     );
+
+  ShadowPeiBase = PcdGet32 (PcdOvmfShadowPeiBase);
+  if (ShadowPeiBase) {
+    //
+    // Create a memory allocation HOB for the shadow PEI FV.
+    //
+    BuildMemoryAllocationHob (
+      ShadowPeiBase,
+      PcdGet32 (PcdOvmfPeiMemFvSize),
+      EfiBootServicesData
+      );
+
+    //
+    // CpuMpPei removes the present bit from the FvOrgBase pages so point
+    // it at a dummy region instead.
+    //
+    BuildMemoryAllocationHob (
+      ShadowPeiBase + PcdGet32 (PcdOvmfPeiMemFvSize),
+      PcdGet32 (PcdOvmfPeiMemFvSize),
+      EfiBootServicesData
+      );
+
+    //
+    // Create a migrated FV info HOB so that the measurement code
+    // will use the shadow data for measurement.
+    //
+    MigratedFvInfo.FvOrgBase  = ShadowPeiBase + PcdGet32 (PcdOvmfPeiMemFvSize);
+    MigratedFvInfo.FvNewBase  = PcdGet32 (PcdOvmfPeiMemFvBase);
+    MigratedFvInfo.FvDataBase = PcdGet32 (PcdOvmfShadowPeiBase);
+    MigratedFvInfo.FvLength   = PcdGet32 (PcdOvmfPeiMemFvSize);
+    BuildGuidDataHob (&gEdkiiMigratedFvInfoGuid, &MigratedFvInfo, sizeof (MigratedFvInfo));
+  }
 
   //
   // Let PEI know about the DXE FV so it can find the DXE Core
