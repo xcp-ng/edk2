@@ -14,6 +14,7 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 
 #include "DxeMain.h"
 #include "Image.h"
+#include <Library/XenVariableLib.h>
 
 //
 // Module Globals
@@ -992,6 +993,34 @@ CoreUnloadAndCloseImage (
   CoreFreePool (Image);
 }
 
+STATIC
+EFI_STATUS
+XenNotifySecureBootFailure (
+  VOID
+  )
+{
+  UINT8 *ptr;
+  EFI_STATUS status;
+  VOID *comm_buf;
+
+  comm_buf = AllocatePages(SHMEM_PAGES);
+  if (!comm_buf)
+    return EFI_OUT_OF_RESOURCES;
+
+  ptr = comm_buf;
+  serialize_uint32(&ptr, 1); /* version */
+  serialize_uint32(&ptr, COMMAND_NOTIFY_SB_FAILURE);
+
+  exec_command(comm_buf);
+
+  ptr = comm_buf;
+  status = unserialize_result(&ptr);
+
+  FreePages(comm_buf, SHMEM_PAGES);
+
+  return status;
+}
+
 
 /**
   Loads an EFI image into memory and returns a handle to the image.
@@ -1204,6 +1233,14 @@ CoreLoadImageCommon (
                                   AuthenticationStatus,
                                   OriginalFilePath
                                   );
+  }
+
+  if (SecurityStatus == EFI_SECURITY_VIOLATION) {
+    EFI_STATUS NotifyStatus = XenNotifySecureBootFailure ();
+
+    if (NotifyStatus != EFI_SUCCESS)
+      DEBUG ((DEBUG_INFO, "XenNotifySecureBootFailure failed: %r\n",
+              NotifyStatus));
   }
 
   //
