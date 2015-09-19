@@ -40,6 +40,7 @@
   DEFINE SMM_REQUIRE             = FALSE
   DEFINE TLS_ENABLE              = FALSE
   DEFINE TPM2_ENABLE             = FALSE
+  DEFINE IPXE_ENABLE             = FALSE
 
   #
   # Flash size selection. Setting FD_SIZE_IN_KB on the command line directly to
