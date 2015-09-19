@@ -447,8 +447,6 @@ InitializeXenPlatform (
     ASSERT_EFI_ERROR (Status);
   }
 
-  XenConnect ();
-
   BootModeInitialization ();
   AddressWidthInitialization ();
 
@@ -458,6 +456,8 @@ InitializeXenPlatform (
   mHostBridgeDevId = PciRead16 (OVMF_HOSTBRIDGE_DID);
 
   PublishPeiMemory ();
+
+  XenConnect ();
 
   InitializeRamRegions ();
 
