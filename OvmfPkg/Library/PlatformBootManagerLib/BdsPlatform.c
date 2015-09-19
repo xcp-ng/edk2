@@ -1541,7 +1541,8 @@ PlatformBootManagerAfterConsole (
     );
 
   RemoveStaleFvFileOptions ();
-  SetBootOrderFromQemu ();
+  if (SetBootOrderFromQemu () == RETURN_UNSUPPORTED)
+    SetBootOrderFromXen ();
 }
 
 /**
