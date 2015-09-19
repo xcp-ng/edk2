@@ -41,6 +41,7 @@
   DEFINE TLS_ENABLE              = FALSE
   DEFINE TPM2_ENABLE             = FALSE
   DEFINE IPXE_ENABLE             = FALSE
+  DEFINE XEN_VARIABLE_ENABLE     = FALSE
 
   #
   # Flash size selection. Setting FD_SIZE_IN_KB on the command line directly to
@@ -190,7 +191,9 @@
   TpmMeasurementLib|MdeModulePkg/Library/TpmMeasurementLibNull/TpmMeasurementLibNull.inf
   AuthVariableLib|MdeModulePkg/Library/AuthVariableLibNull/AuthVariableLibNull.inf
 !endif
+!if $(XEN_VARIABLE_ENABLE) == FALSE
   VarCheckLib|MdeModulePkg/Library/VarCheckLib/VarCheckLib.inf
+!endif
 
 !if $(NETWORK_IP6_ENABLE) == TRUE
   TcpIoLib|MdeModulePkg/Library/DxeTcpIoLib/DxeTcpIoLib.inf
@@ -924,6 +927,9 @@
   #
   # Variable driver stack (non-SMM)
   #
+!if $(XEN_VARIABLE_ENABLE) == TRUE
+  OvmfPkg/XenVariable/XenVariable.inf
+!else
   OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
   OvmfPkg/EmuVariableFvbRuntimeDxe/Fvb.inf {
     <LibraryClasses>
@@ -934,6 +940,7 @@
     <LibraryClasses>
       NULL|MdeModulePkg/Library/VarCheckUefiLib/VarCheckUefiLib.inf
   }
+!endif
 !endif
 
 !if $(TPM2_ENABLE) == TRUE

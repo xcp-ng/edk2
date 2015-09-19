@@ -42,6 +42,7 @@
   DEFINE TPM2_ENABLE             = FALSE
   DEFINE IPXE_ENABLE             = FALSE
   DEFINE XEN_VARIABLE_ENABLE     = FALSE
+  DEFINE EXTRA_MODULES_ENABLE    = TRUE
 
   #
   # Flash size selection. Setting FD_SIZE_IN_KB on the command line directly to
@@ -152,10 +153,14 @@
   IpIoLib|MdeModulePkg/Library/DxeIpIoLib/DxeIpIoLib.inf
   UdpIoLib|MdeModulePkg/Library/DxeUdpIoLib/DxeUdpIoLib.inf
   DpcLib|MdeModulePkg/Library/DxeDpcLib/DxeDpcLib.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   UefiUsbLib|MdePkg/Library/UefiUsbLib/UefiUsbLib.inf
+!endif
   SerializeVariablesLib|OvmfPkg/Library/SerializeVariablesLib/SerializeVariablesLib.inf
   QemuFwCfgLib|OvmfPkg/Library/QemuFwCfgLib/QemuFwCfgDxeLib.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   VirtioLib|OvmfPkg/Library/VirtioLib/VirtioLib.inf
+!endif
   LoadLinuxLib|OvmfPkg/Library/LoadLinuxLib/LoadLinuxLib.inf
   MemEncryptSevLib|OvmfPkg/Library/BaseMemEncryptSevLib/BaseMemEncryptSevLib.inf
 !if $(SMM_REQUIRE) == FALSE
@@ -336,7 +341,9 @@
 !else
   DebugLib|OvmfPkg/Library/PlatformDebugLibIoPort/PlatformDebugLibIoPort.inf
 !endif
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   UefiScsiLib|MdePkg/Library/UefiScsiLib/UefiScsiLib.inf
+!endif
   PciLib|OvmfPkg/Library/DxePciLibI440FxQ35/DxePciLibI440FxQ35.inf
 
 [LibraryClasses.common.DXE_DRIVER]
@@ -714,11 +721,13 @@
       NULL|IntelFrameworkModulePkg/Library/LegacyBootMaintUiLib/LegacyBootMaintUiLib.inf
 !endif
   }
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   OvmfPkg/VirtioPciDeviceDxe/VirtioPciDeviceDxe.inf
   OvmfPkg/Virtio10Dxe/Virtio10.inf
   OvmfPkg/VirtioBlkDxe/VirtioBlk.inf
   OvmfPkg/VirtioScsiDxe/VirtioScsi.inf
   OvmfPkg/VirtioRngDxe/VirtioRng.inf
+!endif
   OvmfPkg/XenIoPciDxe/XenIoPciDxe.inf
   OvmfPkg/XenBusDxe/XenBusDxe.inf
   OvmfPkg/XenPvBlkDxe/XenPvBlkDxe.inf
@@ -744,19 +753,23 @@
   MdeModulePkg/Universal/Disk/UnicodeCollation/EnglishDxe/EnglishDxe.inf
   FatPkg/EnhancedFatDxe/Fat.inf
   MdeModulePkg/Universal/Disk/UdfDxe/UdfDxe.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
   MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
   OvmfPkg/SataControllerDxe/SataControllerDxe.inf
   MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
   MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
   MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
+!endif
   MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
   MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
   MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
   MdeModulePkg/Universal/MemoryTest/NullMemoryTestDxe/NullMemoryTestDxe.inf
 
   OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   OvmfPkg/VirtioGpuDxe/VirtioGpu.inf
+!endif
 
   #
   # ISA Support
@@ -765,7 +778,9 @@
   IntelFrameworkModulePkg/Bus/Isa/IsaBusDxe/IsaBusDxe.inf
   IntelFrameworkModulePkg/Bus/Isa/IsaSerialDxe/IsaSerialDxe.inf
   IntelFrameworkModulePkg/Bus/Isa/Ps2KeyboardDxe/Ps2keyboardDxe.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   IntelFrameworkModulePkg/Bus/Isa/IsaFloppyDxe/IsaFloppyDxe.inf
+!endif
 
   #
   # SMBIOS Support
@@ -824,6 +839,7 @@
       NULL|OvmfPkg/Library/TlsAuthConfigLib/TlsAuthConfigLib.inf
   }
 !endif
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   OvmfPkg/VirtioNetDxe/VirtioNet.inf
 
   #
@@ -835,6 +851,7 @@
   MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
   MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
   MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
+!endif
 
 !ifdef $(CSM_ENABLE)
   IntelFrameworkModulePkg/Csm/BiosThunk/VideoDxe/VideoDxe.inf {
