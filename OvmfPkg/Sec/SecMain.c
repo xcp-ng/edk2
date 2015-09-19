@@ -30,6 +30,7 @@
 #include <Library/PeCoffExtraActionLib.h>
 #include <Library/ExtractGuidedSectionLib.h>
 #include <Library/LocalApicLib.h>
+#include <Library/MtrrLib.h>
 
 #include <Ppi/TemporaryRamSupport.h>
 
@@ -846,9 +847,21 @@ SecStartupPhase2(
   EFI_SEC_PEI_HAND_OFF        *SecCoreData;
   EFI_FIRMWARE_VOLUME_HEADER  *BootFv;
   EFI_PEI_CORE_ENTRY_POINT    PeiCoreEntryPoint;
+  MTRR_SETTINGS               SavedMtrrSettings;
+  MTRR_SETTINGS               MtrrSettings;
   
   SecCoreData = (EFI_SEC_PEI_HAND_OFF *) Context;
-  
+
+  //
+  // Temporary make all memory above 1MB WB cacheable during FV decompression.
+  // Restore the original settings back right before jumping into PEI Core.
+  //
+  MtrrGetAllMtrrs (&SavedMtrrSettings);
+  CopyMem (&MtrrSettings, &SavedMtrrSettings, sizeof MtrrSettings);
+  ZeroMem (&MtrrSettings.Variables, sizeof MtrrSettings.Variables);
+  MtrrSettings.MtrrDefType = (MtrrSettings.MtrrDefType & ~0xff) | MTRR_CACHE_WRITE_BACK;
+  MtrrSetAllMtrrs (&MtrrSettings);
+
   //
   // Find PEI Core entry point. It will report SEC and Pei Core debug information if remote debug
   // is enabled.
@@ -857,6 +870,8 @@ SecStartupPhase2(
   FindAndReportEntryPoints (&BootFv, &PeiCoreEntryPoint);
   SecCoreData->BootFirmwareVolumeBase = BootFv;
   SecCoreData->BootFirmwareVolumeSize = (UINTN) BootFv->FvLength;
+
+  MtrrSetAllMtrrs (&SavedMtrrSettings);
 
   //
   // Transfer the control to the PEI core
