@@ -66,7 +66,12 @@ QemuVideoCompleteModeData (
                     (VOID **)&FrameBufDesc
                     );
 
-  Mode->FrameBufferBase = FrameBufDesc->AddrRangeMin;
+  if (Private->Variant == QEMU_VIDEO_BOCHS_NVIDIA)
+    Mode->FrameBufferBase = ((EFI_PHYSICAL_ADDRESS)BochsRead (Private,
+                                 VBE_DISPI_INDEX_LFB_ADDRESS_H)) << 16 |
+                             BochsRead (Private, VBE_DISPI_INDEX_LFB_ADDRESS_L);
+  else
+    Mode->FrameBufferBase = FrameBufDesc->AddrRangeMin;
   Mode->FrameBufferSize = Info->HorizontalResolution * Info->VerticalResolution;
   Mode->FrameBufferSize = Mode->FrameBufferSize * ((ModeData->ColorDepth + 7) / 8);
   Mode->FrameBufferSize = EFI_PAGES_TO_SIZE (
@@ -183,6 +188,7 @@ Routine Description:
       InitializeCirrusGraphicsMode (Private, &QemuVideoCirrusModes[ModeData->InternalModeIndex]);
       break;
     case QEMU_VIDEO_BOCHS_MMIO:
+    case QEMU_VIDEO_BOCHS_NVIDIA:
     case QEMU_VIDEO_BOCHS:
       InitializeBochsGraphicsMode (Private, ModeData);
       break;
