@@ -73,6 +73,12 @@ QEMU_VIDEO_CARD gQemuVideoCardList[] = {
         L"QEMU VirtIO VGA"
     },{
         PCI_CLASS_DISPLAY_VGA,
+        0x10de,
+        0x13bd,
+        QEMU_VIDEO_BOCHS_NVIDIA,
+        L"NVIDIA vGPU"
+    },{
+        PCI_CLASS_DISPLAY_VGA,
         VMWARE_PCI_VENDOR_ID_VMWARE,
         VMWARE_PCI_DEVICE_ID_VMWARE_SVGA2,
         QEMU_VIDEO_VMWARE_SVGA,
@@ -443,6 +449,7 @@ QemuVideoControllerDriverStart (
     Status = QemuVideoCirrusModeSetup (Private);
     break;
   case QEMU_VIDEO_BOCHS_MMIO:
+  case QEMU_VIDEO_BOCHS_NVIDIA:
   case QEMU_VIDEO_BOCHS:
     Status = QemuVideoBochsModeSetup (Private, IsQxl);
     break;
