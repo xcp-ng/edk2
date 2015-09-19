@@ -23,7 +23,6 @@ Abstract:
 #ifndef _PLATFORM_SPECIFIC_BDS_PLATFORM_H_
 #define _PLATFORM_SPECIFIC_BDS_PLATFORM_H_
 
-
 #include <PiDxe.h>
 
 #include <IndustryStandard/Pci.h>
@@ -51,6 +50,7 @@ Abstract:
 #include <Library/QemuFwCfgLib.h>
 #include <Library/QemuFwCfgS3Lib.h>
 #include <Library/QemuBootOrderLib.h>
+#include <Library/XenBootOrderLib.h> 
 
 #include <Protocol/Decompress.h>
 #include <Protocol/PciIo.h>
