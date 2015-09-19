@@ -232,7 +232,9 @@ APRIORI DXE {
   INF  MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
   INF  MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
   INF  OvmfPkg/AmdSevDxe/AmdSevDxe.inf
+!if $(XEN_VARIABLE_ENABLE) == FALSE
   INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
+!endif
 }
 
 #
@@ -367,10 +369,14 @@ INF  OvmfPkg/IoMmuDxe/IoMmuDxe.inf
 #
 # Variable driver stack (non-SMM)
 #
+!if $(XEN_VARIABLE_ENABLE) == TRUE
+INF  OvmfPkg/XenVariable/XenVariable.inf
+!else
 INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
 INF  OvmfPkg/EmuVariableFvbRuntimeDxe/Fvb.inf
 INF  MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
 INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
+!endif
 
 #
 # TPM support
