@@ -70,6 +70,12 @@ QEMU_VIDEO_CARD  gQemuVideoCardList[] = {
     QEMU_VIDEO_VMWARE_SVGA,
     L"QEMU VMWare SVGA"
   },{
+    PCI_CLASS_DISPLAY_VGA,
+    0x10de,
+    0,
+    QEMU_VIDEO_BOCHS_NVIDIA,
+    L"NVIDIA vGPU"
+  },{
     0     /* end of list */
   }
 };
@@ -86,7 +92,8 @@ QemuVideoDetect (
   while (gQemuVideoCardList[Index].VendorId != 0) {
     if ((gQemuVideoCardList[Index].SubClass == SubClass) &&
         (gQemuVideoCardList[Index].VendorId == VendorId) &&
-        (gQemuVideoCardList[Index].DeviceId == DeviceId))
+        ((gQemuVideoCardList[Index].DeviceId == DeviceId) ||
+         (gQemuVideoCardList[Index].VendorId == 0x10de)))
     {
       return gQemuVideoCardList + Index;
     }
@@ -420,6 +427,7 @@ QemuVideoControllerDriverStart (
       Status = QemuVideoCirrusModeSetup (Private);
       break;
     case QEMU_VIDEO_BOCHS_MMIO:
+    case QEMU_VIDEO_BOCHS_NVIDIA:
     case QEMU_VIDEO_BOCHS:
       Status = QemuVideoBochsModeSetup (Private, IsQxl);
       break;
@@ -1019,7 +1027,8 @@ InitializeBochsGraphicsMode (
     );
 
   SetDefaultPalette (Private);
-  ClearScreen (Private);
+  if (Private->Variant != QEMU_VIDEO_BOCHS_NVIDIA)
+    ClearScreen (Private);
 }
 
 EFI_STATUS
