@@ -231,7 +231,9 @@ READ_LOCK_STATUS   = TRUE
 APRIORI DXE {
   INF  MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
   INF  MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   INF  OvmfPkg/AmdSevDxe/AmdSevDxe.inf
+!endif
 !if $(XEN_VARIABLE_ENABLE) == FALSE
   INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
 !endif
@@ -275,18 +277,22 @@ INF  MdeModulePkg/Universal/Console/TerminalDxe/TerminalDxe.inf
 INF  MdeModulePkg/Universal/DriverHealthManagerDxe/DriverHealthManagerDxe.inf
 INF  MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
 INF  MdeModulePkg/Application/UiApp/UiApp.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
 INF  OvmfPkg/QemuKernelLoaderFsDxe/QemuKernelLoaderFsDxe.inf
+!endif
 INF  MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
 INF  MdeModulePkg/Universal/Disk/DiskIoDxe/DiskIoDxe.inf
 INF  MdeModulePkg/Universal/Disk/PartitionDxe/PartitionDxe.inf
 INF  MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
 INF  MdeModulePkg/Universal/Disk/UnicodeCollation/EnglishDxe/EnglishDxe.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
 INF  MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
 INF  MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
 INF  OvmfPkg/SataControllerDxe/SataControllerDxe.inf
 INF  MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
 INF  MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
 INF  MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
+!endif
 INF  MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
 INF  MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
 INF  MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
@@ -303,7 +309,9 @@ INF  OvmfPkg/SmbiosPlatformDxe/XenSmbiosPlatformDxe.inf
 
 INF  MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
 INF  OvmfPkg/XenAcpiPlatformDxe/XenAcpiPlatformDxe.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
 INF  MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
+!endif
 INF  MdeModulePkg/Universal/Acpi/BootScriptExecutorDxe/BootScriptExecutorDxe.inf
 !if $(BGRT_ENABLE) == TRUE
 INF  MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
@@ -347,12 +355,14 @@ INF SecurityPkg/Hash2DxeCrypto/Hash2DxeCrypto.inf
 #
 # Usb Support
 #
+!if $(EXTRA_MODULES_ENABLE) == TRUE
 INF  MdeModulePkg/Bus/Pci/UhciDxe/UhciDxe.inf
 INF  MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
 INF  MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
 INF  MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
 INF  MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
 INF  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
+!endif
 
 !ifdef $(CSM_ENABLE)
 INF  OvmfPkg/Csm/BiosThunk/VideoDxe/VideoDxe.inf
@@ -361,9 +371,13 @@ INF  RuleOverride=CSM OvmfPkg/Csm/Csm16/Csm16.inf
 !endif
 
 INF  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
 INF  OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
+!endif
 INF  OvmfPkg/PlatformDxe/Platform.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
 INF  OvmfPkg/AmdSevDxe/AmdSevDxe.inf
+!endif
 INF  OvmfPkg/IoMmuDxe/IoMmuDxe.inf
 
 #

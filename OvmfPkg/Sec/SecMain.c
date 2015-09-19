@@ -356,6 +356,7 @@ DecompressMemFvs (
   EFI_FIRMWARE_VOLUME_HEADER  *DxeMemFv;
   UINT32                      FvHeaderSize;
   UINT32                      FvSectionSize;
+  UINT32                      ShadowPeiBase;
 
   FvSection = (EFI_COMMON_SECTION_HEADER *)NULL;
 
@@ -431,6 +432,14 @@ DecompressMemFvs (
 
   PeiMemFv = (EFI_FIRMWARE_VOLUME_HEADER *)(UINTN)PcdGet32 (PcdOvmfPeiMemFvBase);
   CopyMem (PeiMemFv, (VOID *)(FvSection + 1), PcdGet32 (PcdOvmfPeiMemFvSize));
+
+  ShadowPeiBase = PcdGet32 (PcdOvmfShadowPeiBase);
+  if (ShadowPeiBase) {
+    //
+    // Stash pristine PEI FV for later for consistent PCR0 measurments
+    //
+    CopyMem ((VOID*) (UINTN) ShadowPeiBase, PeiMemFv, PcdGet32 (PcdOvmfPeiMemFvSize));
+  }
 
   if (PeiMemFv->Signature != EFI_FVH_SIGNATURE) {
     DEBUG ((DEBUG_ERROR, "Extracted FV at %p does not have FV header signature\n", PeiMemFv));

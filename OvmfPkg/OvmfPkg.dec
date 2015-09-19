@@ -403,6 +403,8 @@
   ## The Tdx accept page size. 0x1000(4k),0x200000(2M)
   gUefiOvmfPkgTokenSpaceGuid.PcdTdxAcceptPageSize|0x200000|UINT32|0x65
 
+  gUefiOvmfPkgTokenSpaceGuid.PcdOvmfShadowPeiBase|0x0|UINT32|0x68
+
 [PcdsDynamic, PcdsDynamicEx]
   gUefiOvmfPkgTokenSpaceGuid.PcdEmuVariableEvent|0|UINT64|2
   gUefiOvmfPkgTokenSpaceGuid.PcdOvmfFlashVariablesEnable|FALSE|BOOLEAN|0x10
