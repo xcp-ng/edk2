@@ -77,6 +77,12 @@ QEMU_VIDEO_CARD gQemuVideoCardList[] = {
         0,
         QEMU_VIDEO_BOCHS_NVIDIA,
         L"NVIDIA vGPU"
+     },{
+        PCI_CLASS_DISPLAY_VGA,
+        0x8086,
+        0x0,
+        QEMU_VIDEO_BOCHS_INTEL,
+        L"Intel GVT-g"
     },{
         PCI_CLASS_DISPLAY_VGA,
         VMWARE_PCI_VENDOR_ID_VMWARE,
@@ -101,7 +107,8 @@ QemuVideoDetect(
     if (gQemuVideoCardList[Index].SubClass == SubClass &&
         gQemuVideoCardList[Index].VendorId == VendorId &&
         (gQemuVideoCardList[Index].DeviceId == DeviceId ||
-         gQemuVideoCardList[Index].VendorId == 0x10de)) {
+         gQemuVideoCardList[Index].VendorId == 0x10de ||
+         gQemuVideoCardList[Index].VendorId == 0x8086)) {
       return gQemuVideoCardList + Index;
     }
     Index++;
@@ -451,6 +458,7 @@ QemuVideoControllerDriverStart (
     break;
   case QEMU_VIDEO_BOCHS_MMIO:
   case QEMU_VIDEO_BOCHS_NVIDIA:
+  case QEMU_VIDEO_BOCHS_INTEL:
   case QEMU_VIDEO_BOCHS:
     Status = QemuVideoBochsModeSetup (Private, IsQxl);
     break;
@@ -1062,7 +1070,8 @@ InitializeBochsGraphicsMode (
               VBE_DISPI_ENABLED | VBE_DISPI_LFB_ENABLED);
 
   SetDefaultPalette (Private);
-  if (Private->Variant != QEMU_VIDEO_BOCHS_NVIDIA)
+  if (Private->Variant != QEMU_VIDEO_BOCHS_NVIDIA &&
+      Private->Variant != QEMU_VIDEO_BOCHS_INTEL)
     ClearScreen (Private);
 }
 
