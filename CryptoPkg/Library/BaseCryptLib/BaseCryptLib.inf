@@ -37,16 +37,16 @@
   Hash/CryptParallelHashNull.c
   Hmac/CryptHmacSha256.c
   Kdf/CryptHkdf.c
-  Cipher/CryptAes.c
+  Cipher/CryptAesNull.c
   Pk/CryptRsaBasic.c
-  Pk/CryptRsaExt.c
+  Pk/CryptRsaExtNull.c
   Pk/CryptPkcs1Oaep.c
-  Pk/CryptPkcs5Pbkdf2.c
-  Pk/CryptPkcs7Sign.c
+  Pk/CryptPkcs5Pbkdf2Null.c
+  Pk/CryptPkcs7SignNull.c
   Pk/CryptPkcs7VerifyCommon.c
   Pk/CryptPkcs7VerifyBase.c
   Pk/CryptPkcs7VerifyEku.c
-  Pk/CryptDh.c
+  Pk/CryptDhNull.c
   Pk/CryptX509.c
   Pk/CryptAuthenticode.c
   Pk/CryptTs.c
