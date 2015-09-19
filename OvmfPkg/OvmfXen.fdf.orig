@@ -231,8 +231,12 @@ READ_LOCK_STATUS   = TRUE
 APRIORI DXE {
   INF  MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
   INF  MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
   INF  OvmfPkg/AmdSevDxe/AmdSevDxe.inf
+!endif
+!if $(XEN_VARIABLE_ENABLE) == FALSE
   INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
+!endif
 }
 
 #
@@ -255,7 +259,7 @@ INF  MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
 INF  MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
 INF  MdeModulePkg/Universal/ResetSystemRuntimeDxe/ResetSystemRuntimeDxe.inf
 INF  MdeModulePkg/Universal/Metronome/Metronome.inf
-INF  EmbeddedPkg/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf
+INF  PcAtChipsetPkg/PcatRealTimeClockRuntimeDxe/PcatRealTimeClockRuntimeDxe.inf
 
 INF  OvmfPkg/XenIoPvhDxe/XenIoPvhDxe.inf
 INF  OvmfPkg/XenIoPciDxe/XenIoPciDxe.inf
@@ -273,18 +277,22 @@ INF  MdeModulePkg/Universal/Console/TerminalDxe/TerminalDxe.inf
 INF  MdeModulePkg/Universal/DriverHealthManagerDxe/DriverHealthManagerDxe.inf
 INF  MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
 INF  MdeModulePkg/Application/UiApp/UiApp.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
 INF  OvmfPkg/QemuKernelLoaderFsDxe/QemuKernelLoaderFsDxe.inf
+!endif
 INF  MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
 INF  MdeModulePkg/Universal/Disk/DiskIoDxe/DiskIoDxe.inf
 INF  MdeModulePkg/Universal/Disk/PartitionDxe/PartitionDxe.inf
 INF  MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
 INF  MdeModulePkg/Universal/Disk/UnicodeCollation/EnglishDxe/EnglishDxe.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
 INF  MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
 INF  MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
 INF  OvmfPkg/SataControllerDxe/SataControllerDxe.inf
 INF  MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
 INF  MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
 INF  MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
+!endif
 INF  MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
 INF  MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
 INF  MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
@@ -301,7 +309,9 @@ INF  OvmfPkg/SmbiosPlatformDxe/XenSmbiosPlatformDxe.inf
 
 INF  MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
 INF  OvmfPkg/XenAcpiPlatformDxe/XenAcpiPlatformDxe.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
 INF  MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
+!endif
 INF  MdeModulePkg/Universal/Acpi/BootScriptExecutorDxe/BootScriptExecutorDxe.inf
 !if $(BGRT_ENABLE) == TRUE
 INF  MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
@@ -327,17 +337,27 @@ INF MdeModulePkg/Logo/LogoDxe.inf
     SECTION PE32 = Intel3.5/EFIX64/E3522X2.EFI
   }
 !endif
+!if $(IPXE_ENABLE) == TRUE
+  FILE DRIVER = 9C1011A2-FC75-4C61-BFF1-AFAACA86DCD0 {
+    SECTION PE32 = 10ec8139.efi
+  }
+  FILE DRIVER = C4F14A61-D11E-499E-AE53-3CC64428E55A {
+    SECTION PE32 = 8086100e.efi
+  }
+!endif
 !include NetworkPkg/Network.fdf.inc
 
 #
 # Usb Support
 #
+!if $(EXTRA_MODULES_ENABLE) == TRUE
 INF  MdeModulePkg/Bus/Pci/UhciDxe/UhciDxe.inf
 INF  MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
 INF  MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
 INF  MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
 INF  MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
 INF  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
+!endif
 
 !ifdef $(CSM_ENABLE)
 INF  OvmfPkg/Csm/BiosThunk/VideoDxe/VideoDxe.inf
@@ -346,18 +366,26 @@ INF  RuleOverride=CSM OvmfPkg/Csm/Csm16/Csm16.inf
 !endif
 
 INF  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
 INF  OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
+!endif
 INF  OvmfPkg/PlatformDxe/Platform.inf
+!if $(EXTRA_MODULES_ENABLE) == TRUE
 INF  OvmfPkg/AmdSevDxe/AmdSevDxe.inf
+!endif
 INF  OvmfPkg/IoMmuDxe/IoMmuDxe.inf
 
 #
 # Variable driver stack (non-SMM)
 #
+!if $(XEN_VARIABLE_ENABLE) == TRUE
+INF  OvmfPkg/XenVariable/XenVariable.inf
+!else
 INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
 INF  OvmfPkg/EmuVariableFvbRuntimeDxe/Fvb.inf
 INF  MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
 INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
+!endif
 
 #
 # TPM support
