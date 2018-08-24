@@ -145,7 +145,11 @@ PcatPciRootBridgeParseBars (
           Length = Length | LShiftU64 ((UINT64) UpperValue, 32);
           Length = (~Length) + 1;
 
-          MemAperture = MemAbove4G;
+          if (Base < 0x100000000) {
+            MemAperture = Mem;
+          } else {
+            MemAperture = MemAbove4G;
+          }
         }
 
         Limit = Base + Length - 1;
