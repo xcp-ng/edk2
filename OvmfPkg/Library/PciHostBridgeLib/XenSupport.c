@@ -129,11 +129,7 @@ PcatPciRootBridgeParseBars (
           //
           Length = ((~Length) + 1) & 0xffffffff;
 
-          if ((Value & BIT3) == BIT3) {
-            MemAperture = PMem;
-          } else {
-            MemAperture = Mem;
-          }
+          MemAperture = Mem;
         } else {
           //
           // 64bit
@@ -149,11 +145,7 @@ PcatPciRootBridgeParseBars (
           Length = Length | LShiftU64 ((UINT64) UpperValue, 32);
           Length = (~Length) + 1;
 
-          if ((Value & BIT3) == BIT3) {
-            MemAperture = PMemAbove4G;
-          } else {
-            MemAperture = MemAbove4G;
-          }
+          MemAperture = MemAbove4G;
         }
 
         Limit = Base + Length - 1;
