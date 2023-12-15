@@ -76,27 +76,27 @@ Ip6IsOptionValid (
           case Ip6OptionParameterProblem:
             Pointer = Pointer + Offset + sizeof (EFI_IP6_HEADER);
             Ip6SendIcmpError (
-              IpSb,
-              Packet,
-              NULL,
-              &Packet->Ip.Ip6->SourceAddress,
-              ICMP_V6_PARAMETER_PROBLEM,
-              2,
-              &Pointer
-              );
+                              IpSb,
+                              Packet,
+                              NULL,
+                              &Packet->Ip.Ip6->SourceAddress,
+                              ICMP_V6_PARAMETER_PROBLEM,
+                              2,
+                              &Pointer
+                              );
             return FALSE;
           case Ip6OptionMask:
             if (!IP6_IS_MULTICAST (&Packet->Ip.Ip6->DestinationAddress)) {
               Pointer = Pointer + Offset + sizeof (EFI_IP6_HEADER);
               Ip6SendIcmpError (
-                IpSb,
-                Packet,
-                NULL,
-                &Packet->Ip.Ip6->SourceAddress,
-                ICMP_V6_PARAMETER_PROBLEM,
-                2,
-                &Pointer
-                );
+                                IpSb,
+                                Packet,
+                                NULL,
+                                &Packet->Ip.Ip6->SourceAddress,
+                                ICMP_V6_PARAMETER_PROBLEM,
+                                2,
+                                &Pointer
+                                );
             }
 
             return FALSE;
@@ -134,6 +134,14 @@ Ip6IsNDOptionValid (
 
   if (Option == NULL) {
     ASSERT (Option != NULL);
+    return FALSE;
+  }
+
+  //
+  // Cannot process truncated options.
+  // Cannot process options with a length of 0 as there is no Type field.
+  //
+  if (OptionLen < sizeof (IP6_OPTION_HEADER)) {
     return FALSE;
   }
 
@@ -358,14 +366,14 @@ Ip6IsExtsValid (
               !IP6_IS_MULTICAST (&Packet->Ip.Ip6->DestinationAddress))
           {
             Ip6SendIcmpError (
-              IpSb,
-              Packet,
-              NULL,
-              &Packet->Ip.Ip6->SourceAddress,
-              ICMP_V6_PARAMETER_PROBLEM,
-              1,
-              &Pointer
-              );
+                              IpSb,
+                              Packet,
+                              NULL,
+                              &Packet->Ip.Ip6->SourceAddress,
+                              ICMP_V6_PARAMETER_PROBLEM,
+                              1,
+                              &Pointer
+                              );
           }
 
           return FALSE;
@@ -438,14 +446,14 @@ Ip6IsExtsValid (
               !IP6_IS_MULTICAST (&Packet->Ip.Ip6->DestinationAddress))
           {
             Ip6SendIcmpError (
-              IpSb,
-              Packet,
-              NULL,
-              &Packet->Ip.Ip6->SourceAddress,
-              ICMP_V6_PARAMETER_PROBLEM,
-              0,
-              &Pointer
-              );
+                              IpSb,
+                              Packet,
+                              NULL,
+                              &Packet->Ip.Ip6->SourceAddress,
+                              ICMP_V6_PARAMETER_PROBLEM,
+                              0,
+                              &Pointer
+                              );
           }
 
           return FALSE;
@@ -484,14 +492,14 @@ Ip6IsExtsValid (
           {
             Pointer = sizeof (UINT32);
             Ip6SendIcmpError (
-              IpSb,
-              Packet,
-              NULL,
-              &Packet->Ip.Ip6->SourceAddress,
-              ICMP_V6_PARAMETER_PROBLEM,
-              0,
-              &Pointer
-              );
+                              IpSb,
+                              Packet,
+                              NULL,
+                              &Packet->Ip.Ip6->SourceAddress,
+                              ICMP_V6_PARAMETER_PROBLEM,
+                              0,
+                              &Pointer
+                              );
             return FALSE;
           }
         }
@@ -560,14 +568,14 @@ Ip6IsExtsValid (
             !IP6_IS_MULTICAST (&Packet->Ip.Ip6->DestinationAddress))
         {
           Ip6SendIcmpError (
-            IpSb,
-            Packet,
-            NULL,
-            &Packet->Ip.Ip6->SourceAddress,
-            ICMP_V6_PARAMETER_PROBLEM,
-            1,
-            &Pointer
-            );
+                            IpSb,
+                            Packet,
+                            NULL,
+                            &Packet->Ip.Ip6->SourceAddress,
+                            ICMP_V6_PARAMETER_PROBLEM,
+                            1,
+                            &Pointer
+                            );
         }
 
         return FALSE;
@@ -774,10 +782,10 @@ Ip6FillFragmentHeader (
     // Append the part2 (fragmentable part) of Extension headers
     //
     CopyMem (
-      Buffer + Part1Len + sizeof (IP6_FRAGMENT_HEADER),
-      ExtHdrs + Part1Len,
-      ExtHdrsLen - Part1Len
-      );
+             Buffer + Part1Len + sizeof (IP6_FRAGMENT_HEADER),
+             ExtHdrs + Part1Len,
+             ExtHdrsLen - Part1Len
+             );
   }
 
   *UpdatedExtHdrs = Buffer;
