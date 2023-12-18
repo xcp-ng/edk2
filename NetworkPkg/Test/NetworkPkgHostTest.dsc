@@ -14,7 +14,7 @@
   SUPPORTED_ARCHITECTURES = IA32|X64|AARCH64
   BUILD_TARGETS           = NOOPT
   SKUID_IDENTIFIER        = DEFAULT
-  
+
 !include UnitTestFrameworkPkg/UnitTestFrameworkPkgHost.dsc.inc
 [Packages]
   MdePkg/MdePkg.dec
