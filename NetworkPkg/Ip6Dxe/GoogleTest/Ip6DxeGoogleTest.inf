@@ -1,5 +1,5 @@
 ## @file
-# Unit test suite for the Ip6Dxe using Google Test
+# Unit test suite for the Ip6DxeGoogleTest using Google Test
 #
 # Copyright (c) Microsoft Corporation.<BR>
 # SPDX-License-Identifier: BSD-2-Clause-Patent
@@ -31,7 +31,6 @@
   DebugLib
   NetLib
   PcdLib
-
 [Protocols]
   gEfiDhcp6ServiceBindingProtocolGuid
 
