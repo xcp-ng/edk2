@@ -433,11 +433,15 @@ CreatePageTable (
   UINT64                AddressEncMask;
   UINT64                *PageEntry;
   EFI_PHYSICAL_ADDRESS  PhysicalAddress;
+  INTN                  Shift;
 
   TopLevelPageAttr    = (PAGE_ATTRIBUTE)GetPageTableTopLevelType ();
   PhysicalAddressBits = GetPhysicalAddressWidth ();
-  NumberOfEntries     = (UINTN)1 << (PhysicalAddressBits -
-                                     mPageAttributeTable[TopLevelPageAttr].AddressBitOffset);
+  NumberOfEntries     = (UINTN)1;
+  Shift = PhysicalAddressBits - mPageAttributeTable[TopLevelPageAttr].AddressBitOffset;
+  if (Shift > 0) {
+    NumberOfEntries <<= Shift;
+  }
 
   PageTable = (UINTN)AllocatePageTableMemory (1);
   if (PageTable == 0) {
