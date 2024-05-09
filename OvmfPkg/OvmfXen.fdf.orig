@@ -3,6 +3,7 @@
 #
 #  Copyright (c) 2006 - 2019, Intel Corporation. All rights reserved.<BR>
 #  (C) Copyright 2016 Hewlett Packard Enterprise Development LP<BR>
+#  Copyright (c) 2019, Citrix Systems, Inc.
 #
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
 #
@@ -14,8 +15,8 @@
 !include OvmfPkgDefines.fdf.inc
 
 #
-# Build the variable store and the firmware code as one unified flash device
-# image.
+# This will allow the flash device image to be recognize as an ELF, with first
+# an ELF headers, then the firmware code.
 #
 [FD.OVMF]
 BaseAddress   = $(FW_BASE_ADDRESS)
@@ -24,7 +25,49 @@ ErasePolarity = 1
 BlockSize     = $(BLOCK_SIZE)
 NumBlocks     = $(FW_BLOCKS)
 
-!include VarStore.fdf.inc
+!if ($(FD_SIZE_IN_KB) == 1024) || ($(FD_SIZE_IN_KB) == 2048)
+0x00000000|0x0000e000
+!endif
+!if $(FD_SIZE_IN_KB) == 4096
+0x00000000|0x00040000
+!endif
+
+!include XenElfHeader.fdf.inc
+
+!if ($(FD_SIZE_IN_KB) == 1024) || ($(FD_SIZE_IN_KB) == 2048)
+0x0000e000|0x00001000
+!endif
+!if $(FD_SIZE_IN_KB) == 4096
+0x00040000|0x00001000
+!endif
+#NV_EVENT_LOG
+
+!if ($(FD_SIZE_IN_KB) == 1024) || ($(FD_SIZE_IN_KB) == 2048)
+0x0000f000|0x00001000
+!endif
+!if $(FD_SIZE_IN_KB) == 4096
+0x00041000|0x00001000
+!endif
+#NV_FTW_WORKING
+DATA = {
+  # EFI_FAULT_TOLERANT_WORKING_BLOCK_HEADER->Signature = gEdkiiWorkingBlockSignatureGuid         =
+  #  { 0x9e58292b, 0x7c68, 0x497d, { 0xa0, 0xce, 0x65,  0x0, 0xfd, 0x9f, 0x1b, 0x95 }}
+  0x2b, 0x29, 0x58, 0x9e, 0x68, 0x7c, 0x7d, 0x49,
+  0xa0, 0xce, 0x65,  0x0, 0xfd, 0x9f, 0x1b, 0x95,
+  # Crc:UINT32            #WorkingBlockValid:1, WorkingBlockInvalid:1, Reserved
+  0x2c, 0xaf, 0x2c, 0x64, 0xFE, 0xFF, 0xFF, 0xFF,
+  # WriteQueueSize: UINT64
+  0xE0, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+}
+
+!if ($(FD_SIZE_IN_KB) == 1024) || ($(FD_SIZE_IN_KB) == 2048)
+0x00010000|0x00010000
+!endif
+!if $(FD_SIZE_IN_KB) == 4096
+0x00042000|0x00042000
+!endif
+#NV_FTW_SPARE
+
 
 $(VARS_SIZE)|$(FVMAIN_SIZE)
 FV = FVMAIN_COMPACT
@@ -62,10 +105,10 @@ FV = SECFV
 
 [FD.MEMFD]
 BaseAddress   = $(MEMFD_BASE_ADDRESS)
-Size          = 0xD00000
+Size          = 0xB00000
 ErasePolarity = 1
 BlockSize     = 0x10000
-NumBlocks     = 0xD0
+NumBlocks     = 0xB0
 
 0x000000|0x006000
 gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecPageTablesBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecPageTablesSize
@@ -77,7 +120,8 @@ gUefiOvmfPkgTokenSpaceGuid.PcdOvmfLockBoxStorageBase|gUefiOvmfPkgTokenSpaceGuid.
 gEfiMdePkgTokenSpaceGuid.PcdGuidedExtractHandlerTableAddress|gUefiOvmfPkgTokenSpaceGuid.PcdGuidedExtractHandlerTableSize
 
 0x008000|0x001000
-gUefiOvmfPkgTokenSpaceGuid.PcdOvmfWorkAreaBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfWorkAreaSize
+# Used by XenResetVector to communicate with XenPlatformPei
+gUefiOvmfPkgTokenSpaceGuid.PcdXenPvhStartOfDayStructPtr|gUefiOvmfPkgTokenSpaceGuid.PcdXenPvhStartOfDayStructPtrSize
 
 0x010000|0x010000
 gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecPeiTempRamBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecPeiTempRamSize
@@ -86,17 +130,9 @@ gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecPeiTempRamBase|gUefiOvmfPkgTokenSpaceGuid.P
 gUefiOvmfPkgTokenSpaceGuid.PcdOvmfPeiMemFvBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfPeiMemFvSize
 FV = PEIFV
 
-0x100000|0xC00000
+0x100000|0xA00000
 gUefiOvmfPkgTokenSpaceGuid.PcdOvmfDxeMemFvBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfDxeMemFvSize
 FV = DXEFV
-
-##########################################################################################
-# Set the SEV-ES specific work area PCDs (used for all forms of SEV since the
-# the SEV STATUS MSR is now saved in the work area)
-#
-SET gUefiCpuPkgTokenSpaceGuid.PcdSevEsWorkAreaBase = $(MEMFD_BASE_ADDRESS) +  gUefiOvmfPkgTokenSpaceGuid.PcdOvmfWorkAreaBase + gUefiOvmfPkgTokenSpaceGuid.PcdOvmfConfidentialComputingWorkAreaHeader
-SET gUefiCpuPkgTokenSpaceGuid.PcdSevEsWorkAreaSize = gUefiOvmfPkgTokenSpaceGuid.PcdOvmfWorkAreaSize - gUefiOvmfPkgTokenSpaceGuid.PcdOvmfConfidentialComputingWorkAreaHeader
-##########################################################################################
 
 ################################################################################
 
@@ -128,7 +164,7 @@ READ_LOCK_STATUS   = TRUE
 #
 INF  OvmfPkg/Sec/SecMain.inf
 
-INF  RuleOverride=RESET_VECTOR OvmfPkg/ResetVector/ResetVector.inf
+INF  RuleOverride=RESET_VECTOR OvmfPkg/XenResetVector/XenResetVector.inf
 
 ################################################################################
 [FV.PEIFV]
@@ -162,17 +198,10 @@ INF  MdeModulePkg/Core/Pei/PeiMain.inf
 INF  MdeModulePkg/Universal/PCD/Pei/Pcd.inf
 INF  MdeModulePkg/Universal/ReportStatusCodeRouter/Pei/ReportStatusCodeRouterPei.inf
 INF  MdeModulePkg/Universal/StatusCodeHandler/Pei/StatusCodeHandlerPei.inf
-INF  OvmfPkg/PlatformPei/PlatformPei.inf
+INF  OvmfPkg/XenPlatformPei/XenPlatformPei.inf
 INF  MdeModulePkg/Core/DxeIplPeim/DxeIpl.inf
 INF  UefiCpuPkg/Universal/Acpi/S3Resume2Pei/S3Resume2Pei.inf
-!if $(SMM_REQUIRE) == TRUE
-INF  MdeModulePkg/Universal/FaultTolerantWritePei/FaultTolerantWritePei.inf
-INF  MdeModulePkg/Universal/Variable/Pei/VariablePei.inf
-INF  OvmfPkg/SmmAccess/SmmAccessPei.inf
-!endif
 INF  UefiCpuPkg/CpuMpPei/CpuMpPei.inf
-
-!include OvmfPkg/OvmfTpmPei.fdf.inc
 
 ################################################################################
 
@@ -200,9 +229,8 @@ READ_LOCK_STATUS   = TRUE
 APRIORI DXE {
   INF  MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
   INF  MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
-!if $(SMM_REQUIRE) == FALSE
+  INF  OvmfPkg/AmdSevDxe/AmdSevDxe.inf
   INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
-!endif
 }
 
 #
@@ -217,40 +245,21 @@ INF  MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
 INF  MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
 INF  MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf
 INF  MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
+INF  OvmfPkg/LocalApicTimerDxe/LocalApicTimerDxe.inf
 INF  UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
 INF  UefiCpuPkg/CpuDxe/CpuDxe.inf
-!ifdef $(CSM_ENABLE)
-  INF OvmfPkg/8259InterruptControllerDxe/8259.inf
-  INF OvmfPkg/8254TimerDxe/8254Timer.inf
-!else
-  INF OvmfPkg/LocalApicTimerDxe/LocalApicTimerDxe.inf
-!endif
-INF  OvmfPkg/IncompatiblePciDeviceSupportDxe/IncompatiblePciDeviceSupport.inf
 INF  OvmfPkg/PciHotPlugInitDxe/PciHotPlugInit.inf
 INF  MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
 INF  MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
 INF  MdeModulePkg/Universal/ResetSystemRuntimeDxe/ResetSystemRuntimeDxe.inf
 INF  MdeModulePkg/Universal/Metronome/Metronome.inf
-INF  PcAtChipsetPkg/PcatRealTimeClockRuntimeDxe/PcatRealTimeClockRuntimeDxe.inf
+INF  EmbeddedPkg/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf
 
-INF  OvmfPkg/VirtioPciDeviceDxe/VirtioPciDeviceDxe.inf
-INF  OvmfPkg/Virtio10Dxe/Virtio10.inf
-INF  OvmfPkg/VirtioBlkDxe/VirtioBlk.inf
-INF  OvmfPkg/VirtioScsiDxe/VirtioScsi.inf
-INF  OvmfPkg/VirtioRngDxe/VirtioRng.inf
-!if $(PVSCSI_ENABLE) == TRUE
-INF  OvmfPkg/PvScsiDxe/PvScsiDxe.inf
-!endif
-!if $(MPT_SCSI_ENABLE) == TRUE
-INF  OvmfPkg/MptScsiDxe/MptScsiDxe.inf
-!endif
-!if $(LSI_SCSI_ENABLE) == TRUE
-INF  OvmfPkg/LsiScsiDxe/LsiScsiDxe.inf
-!endif
-
-!if $(SECURE_BOOT_ENABLE) == TRUE
-  INF  SecurityPkg/VariableAuthenticated/SecureBootConfigDxe/SecureBootConfigDxe.inf
-!endif
+INF  OvmfPkg/XenIoPvhDxe/XenIoPvhDxe.inf
+INF  OvmfPkg/XenIoPciDxe/XenIoPciDxe.inf
+INF  OvmfPkg/XenBusDxe/XenBusDxe.inf
+INF  OvmfPkg/XenPvBlkDxe/XenPvBlkDxe.inf
+INF  MdeModulePkg/Universal/SerialDxe/SerialDxe.inf
 
 INF  MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
 INF  MdeModulePkg/Universal/MonotonicCounterRuntimeDxe/MonotonicCounterRuntimeDxe.inf
@@ -286,17 +295,16 @@ INF  MdeModulePkg/Bus/Pci/PciSioSerialDxe/PciSioSerialDxe.inf
 INF  MdeModulePkg/Bus/Isa/Ps2KeyboardDxe/Ps2KeyboardDxe.inf
 
 INF  MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
-INF  OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.inf
+INF  OvmfPkg/SmbiosPlatformDxe/XenSmbiosPlatformDxe.inf
 
 INF  MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
-INF  OvmfPkg/AcpiPlatformDxe/AcpiPlatformDxe.inf
+INF  OvmfPkg/XenAcpiPlatformDxe/XenAcpiPlatformDxe.inf
 INF  MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
 INF  MdeModulePkg/Universal/Acpi/BootScriptExecutorDxe/BootScriptExecutorDxe.inf
 INF  MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
 
 INF  FatPkg/EnhancedFatDxe/Fat.inf
 INF  MdeModulePkg/Universal/Disk/UdfDxe/UdfDxe.inf
-INF  OvmfPkg/VirtioFsDxe/VirtioFsDxe.inf
 
 !if $(TOOL_CHAIN_TAG) != "XCODE5"
 INF  ShellPkg/DynamicCommand/TftpDynamicCommand/TftpDynamicCommand.inf
@@ -308,15 +316,14 @@ INF  ShellPkg/Application/Shell/Shell.inf
 INF MdeModulePkg/Logo/LogoDxe.inf
 
 #
-# Hash2 Protocol producer
-#
-INF SecurityPkg/Hash2DxeCrypto/Hash2DxeCrypto.inf
-
-#
 # Network modules
 #
+!if $(E1000_ENABLE)
+  FILE DRIVER = 5D695E11-9B3F-4b83-B25F-4A8D5D69BE07 {
+    SECTION PE32 = Intel3.5/EFIX64/E3522X2.EFI
+  }
+!endif
 !include NetworkPkg/Network.fdf.inc
-  INF  OvmfPkg/VirtioNetDxe/VirtioNet.inf
 
 #
 # Usb Support
@@ -332,35 +339,13 @@ INF  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
 INF  OvmfPkg/Csm/BiosThunk/VideoDxe/VideoDxe.inf
 INF  OvmfPkg/Csm/LegacyBiosDxe/LegacyBiosDxe.inf
 INF  RuleOverride=CSM OvmfPkg/Csm/Csm16/Csm16.inf
-!else
-INF  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
 !endif
 
+INF  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
 INF  OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
-INF  OvmfPkg/VirtioGpuDxe/VirtioGpu.inf
 INF  OvmfPkg/PlatformDxe/Platform.inf
+INF  OvmfPkg/AmdSevDxe/AmdSevDxe.inf
 INF  OvmfPkg/IoMmuDxe/IoMmuDxe.inf
-
-!if $(SMM_REQUIRE) == TRUE
-INF  OvmfPkg/SmmAccess/SmmAccess2Dxe.inf
-INF  OvmfPkg/SmmControl2Dxe/SmmControl2Dxe.inf
-INF  OvmfPkg/CpuS3DataDxe/CpuS3DataDxe.inf
-INF  MdeModulePkg/Core/PiSmmCore/PiSmmIpl.inf
-INF  MdeModulePkg/Core/PiSmmCore/PiSmmCore.inf
-INF  OvmfPkg/CpuHotplugSmm/CpuHotplugSmm.inf
-INF  UefiCpuPkg/CpuIo2Smm/CpuIo2Smm.inf
-INF  MdeModulePkg/Universal/LockBox/SmmLockBox/SmmLockBox.inf
-INF  UefiCpuPkg/PiSmmCpuDxeSmm/PiSmmCpuDxeSmm.inf
-
-#
-# Variable driver stack (SMM)
-#
-INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesSmm.inf
-INF  MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteSmm.inf
-INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmm.inf
-INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmmRuntimeDxe.inf
-
-!else
 
 #
 # Variable driver stack (non-SMM)
@@ -369,16 +354,6 @@ INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
 INF  OvmfPkg/EmuVariableFvbRuntimeDxe/Fvb.inf
 INF  MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
 INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
-!endif
-
-#
-# TPM support
-#
-!include OvmfPkg/OvmfTpmDxe.fdf.inc
-
-!if $(LOAD_X64_ON_IA32_ENABLE) == TRUE
-INF  OvmfPkg/CompatImageLoaderDxe/CompatImageLoaderDxe.inf
-!endif
 
 ################################################################################
 
@@ -502,19 +477,4 @@ FILE FV_IMAGE = 9E21FD93-9C72-4c15-8C4B-E77F1DB2D792 {
 [Rule.Common.SEC.RESET_VECTOR]
   FILE RAW = $(NAMED_GUID) {
     RAW BIN   Align = 16   |.bin
-  }
-
-[Rule.Common.SMM_CORE]
-  FILE SMM_CORE = $(NAMED_GUID) {
-    PE32     PE32           $(INF_OUTPUT)/$(MODULE_NAME).efi
-    UI       STRING="$(MODULE_NAME)" Optional
-    VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
-  }
-
-[Rule.Common.DXE_SMM_DRIVER]
-  FILE SMM = $(NAMED_GUID) {
-    SMM_DEPEX    SMM_DEPEX Optional      $(INF_OUTPUT)/$(MODULE_NAME).depex
-    PE32     PE32                    $(INF_OUTPUT)/$(MODULE_NAME).efi
-    UI       STRING="$(MODULE_NAME)" Optional
-    VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
   }

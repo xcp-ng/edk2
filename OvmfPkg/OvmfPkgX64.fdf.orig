@@ -77,7 +77,22 @@ gUefiOvmfPkgTokenSpaceGuid.PcdOvmfLockBoxStorageBase|gUefiOvmfPkgTokenSpaceGuid.
 gEfiMdePkgTokenSpaceGuid.PcdGuidedExtractHandlerTableAddress|gUefiOvmfPkgTokenSpaceGuid.PcdGuidedExtractHandlerTableSize
 
 0x008000|0x001000
+gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecGhcbPageTableBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecGhcbPageTableSize
+
+0x009000|0x002000
+gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecGhcbBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecGhcbSize
+
+0x00B000|0x001000
 gUefiOvmfPkgTokenSpaceGuid.PcdOvmfWorkAreaBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfWorkAreaSize
+
+0x00C000|0x001000
+gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecGhcbBackupBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecGhcbBackupSize
+
+0x00D000|0x001000
+gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSnpSecretsBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSnpSecretsSize
+
+0x00E000|0x001000
+gUefiOvmfPkgTokenSpaceGuid.PcdOvmfCpuidBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfCpuidSize
 
 0x010000|0x010000
 gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecPeiTempRamBase|gUefiOvmfPkgTokenSpaceGuid.PcdOvmfSecPeiTempRamSize
@@ -171,6 +186,7 @@ INF  MdeModulePkg/Universal/Variable/Pei/VariablePei.inf
 INF  OvmfPkg/SmmAccess/SmmAccessPei.inf
 !endif
 INF  UefiCpuPkg/CpuMpPei/CpuMpPei.inf
+INF  FILE_GUID = $(UP_CPU_PEI_GUID) UefiCpuPkg/CpuMpPei/CpuMpPei.inf
 
 !include OvmfPkg/OvmfTpmPei.fdf.inc
 
@@ -200,6 +216,13 @@ READ_LOCK_STATUS   = TRUE
 APRIORI DXE {
   INF  MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
   INF  MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
+  # AmdSevDxe must be loaded before TdxDxe. Because in SEV guest AmdSevDxe
+  # driver performs a MemEncryptSevClearMmioPageEncMask() call against the
+  # PcdPciExpressBaseAddress range to mark it shared/unencrypted.
+  # Otherwise #VC handler terminates the guest for trying to do MMIO to an
+  # encrypted region (Since the range has not been marked shared/unencrypted).
+  INF  OvmfPkg/AmdSevDxe/AmdSevDxe.inf
+  INF  OvmfPkg/TdxDxe/TdxDxe.inf
 !if $(SMM_REQUIRE) == FALSE
   INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
 !endif
@@ -218,12 +241,15 @@ INF  MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
 INF  MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf
 INF  MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
 INF  UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
+
 INF  UefiCpuPkg/CpuDxe/CpuDxe.inf
+INF  FILE_GUID = $(UP_CPU_DXE_GUID) UefiCpuPkg/CpuDxe/CpuDxe.inf
+
 !ifdef $(CSM_ENABLE)
-  INF OvmfPkg/8259InterruptControllerDxe/8259.inf
-  INF OvmfPkg/8254TimerDxe/8254Timer.inf
+  INF  OvmfPkg/8259InterruptControllerDxe/8259.inf
+  INF  OvmfPkg/8254TimerDxe/8254Timer.inf
 !else
-  INF OvmfPkg/LocalApicTimerDxe/LocalApicTimerDxe.inf
+  INF  OvmfPkg/LocalApicTimerDxe/LocalApicTimerDxe.inf
 !endif
 INF  OvmfPkg/IncompatiblePciDeviceSupportDxe/IncompatiblePciDeviceSupport.inf
 INF  OvmfPkg/PciHotPlugInitDxe/PciHotPlugInit.inf
@@ -307,14 +333,16 @@ INF  ShellPkg/Application/Shell/Shell.inf
 
 INF MdeModulePkg/Logo/LogoDxe.inf
 
-#
-# Hash2 Protocol producer
-#
-INF SecurityPkg/Hash2DxeCrypto/Hash2DxeCrypto.inf
+INF OvmfPkg/TdxDxe/TdxDxe.inf
 
 #
 # Network modules
 #
+!if $(E1000_ENABLE)
+  FILE DRIVER = 5D695E11-9B3F-4b83-B25F-4A8D5D69BE07 {
+    SECTION PE32 = Intel3.5/EFIX64/E3522X2.EFI
+  }
+!endif
 !include NetworkPkg/Network.fdf.inc
   INF  OvmfPkg/VirtioNetDxe/VirtioNet.inf
 
@@ -339,6 +367,7 @@ INF  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
 INF  OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
 INF  OvmfPkg/VirtioGpuDxe/VirtioGpu.inf
 INF  OvmfPkg/PlatformDxe/Platform.inf
+INF  OvmfPkg/AmdSevDxe/AmdSevDxe.inf
 INF  OvmfPkg/IoMmuDxe/IoMmuDxe.inf
 
 !if $(SMM_REQUIRE) == TRUE
@@ -375,10 +404,6 @@ INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
 # TPM support
 #
 !include OvmfPkg/OvmfTpmDxe.fdf.inc
-
-!if $(LOAD_X64_ON_IA32_ENABLE) == TRUE
-INF  OvmfPkg/CompatImageLoaderDxe/CompatImageLoaderDxe.inf
-!endif
 
 ################################################################################
 
