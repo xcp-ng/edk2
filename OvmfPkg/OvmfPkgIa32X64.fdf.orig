@@ -200,6 +200,7 @@ READ_LOCK_STATUS   = TRUE
 APRIORI DXE {
   INF  MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
   INF  MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
+  INF  OvmfPkg/AmdSevDxe/AmdSevDxe.inf
 !if $(SMM_REQUIRE) == FALSE
   INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
 !endif
@@ -308,13 +309,13 @@ INF  ShellPkg/Application/Shell/Shell.inf
 INF MdeModulePkg/Logo/LogoDxe.inf
 
 #
-# Hash2 Protocol producer
-#
-INF SecurityPkg/Hash2DxeCrypto/Hash2DxeCrypto.inf
-
-#
 # Network modules
 #
+!if $(E1000_ENABLE)
+  FILE DRIVER = 5D695E11-9B3F-4b83-B25F-4A8D5D69BE07 {
+    SECTION PE32 = Intel3.5/EFIX64/E3522X2.EFI
+  }
+!endif
 !include NetworkPkg/Network.fdf.inc
   INF  OvmfPkg/VirtioNetDxe/VirtioNet.inf
 
@@ -339,6 +340,7 @@ INF  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
 INF  OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
 INF  OvmfPkg/VirtioGpuDxe/VirtioGpu.inf
 INF  OvmfPkg/PlatformDxe/Platform.inf
+INF  OvmfPkg/AmdSevDxe/AmdSevDxe.inf
 INF  OvmfPkg/IoMmuDxe/IoMmuDxe.inf
 
 !if $(SMM_REQUIRE) == TRUE
@@ -375,10 +377,6 @@ INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
 # TPM support
 #
 !include OvmfPkg/OvmfTpmDxe.fdf.inc
-
-!if $(LOAD_X64_ON_IA32_ENABLE) == TRUE
-INF  OvmfPkg/CompatImageLoaderDxe/CompatImageLoaderDxe.inf
-!endif
 
 ################################################################################
 
