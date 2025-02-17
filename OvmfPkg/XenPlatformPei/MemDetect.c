@@ -257,6 +257,16 @@ GetPeiMemoryCap (
   ASSERT (TotalPages <= 0x40201);
 
   //
+  // If PcdOvmfShadowPeiBase is set, we create a gEdkiiMigratedFvInfoGuid
+  // in XenPlatformPei. This lead to the creation of a second set of page
+  // tables in MemoryDiscoveredPpiNotifyCallback() in CpuMpPei. Allocate
+  // space for it.
+  //
+  if (PcdGet32 (PcdOvmfShadowPeiBase)) {
+    TotalPages *= 2;
+  }
+
+  //
   // Add 64 MB for miscellaneous allocations. Note that for
   // mPhysMemAddressWidth values close to 36, the cap will actually be
   // dominated by this increment.
