@@ -45,6 +45,7 @@
 [Guids]
   gEfiMemoryTypeInformationGuid
   gEfiXenInfoGuid
+  gEdkiiMigratedFvInfoGuid                                             ## SOMETIMES_CONSUMES     ## HOB
 
 [LibraryClasses]
   BaseLib
@@ -79,6 +80,7 @@
   gUefiOvmfPkgTokenSpaceGuid.PcdPciMmio32Size
   gUefiOvmfPkgTokenSpaceGuid.PcdPciMmio64Base
   gUefiOvmfPkgTokenSpaceGuid.PcdPciMmio64Size
+  gUefiOvmfPkgTokenSpaceGuid.PcdOvmfShadowPeiBase
   gUefiOvmfPkgTokenSpaceGuid.PcdQ35TsegMbytes
   gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiS3Enable
   gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareSize
