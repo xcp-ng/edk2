@@ -355,7 +355,7 @@ Again:
   }
 
   DEBUG ((
-    DEBUG_INFO,
+    DEBUG_ERROR,
     "XenPvBlk: New disk with %ld 512B-sectors and logical sector size of %d bytes\n",
     Dev->MediaInfo.Sectors,
     Dev->MediaInfo.SectorSize
