@@ -52,6 +52,7 @@
   PeCoffExtraActionLib
   ExtractGuidedSectionLib
   LocalApicLib
+  MtrrLib
   MemEncryptSevLib
   CpuExceptionHandlerLib
   CcProbeLib
