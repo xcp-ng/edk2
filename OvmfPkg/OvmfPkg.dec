@@ -105,6 +105,10 @@
   #
   QemuLoadImageLib|Include/Library/QemuLoadImageLib.h
 
+  ##  @libraryclass  Rewrite the BootOrder Var based on CMOS order set by QEMU.
+  #
+  XenBootOrderLib|Include/Library/XenBootOrderLib.h
+
   ##  @libraryclass  Serialize (and deserialize) variables
   #
   SerializeVariablesLib|Include/Library/SerializeVariablesLib.h
