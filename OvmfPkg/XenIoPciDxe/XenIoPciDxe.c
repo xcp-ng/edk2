@@ -24,6 +24,7 @@
 
 #define PCI_VENDOR_ID_XEN           0x5853
 #define PCI_DEVICE_ID_XEN_PLATFORM  0x0001
+#define PCI_DEVICE_ID_XEN_PLATFORM_XS    0x0002
 
 /**
 
@@ -96,7 +97,8 @@ XenIoPciDeviceBindingSupported (
 
   if (Status == EFI_SUCCESS) {
     if ((Pci.Hdr.VendorId == PCI_VENDOR_ID_XEN) &&
-        (Pci.Hdr.DeviceId == PCI_DEVICE_ID_XEN_PLATFORM))
+        (Pci.Hdr.DeviceId == PCI_DEVICE_ID_XEN_PLATFORM ||
+         Pci.Hdr.DeviceId == PCI_DEVICE_ID_XEN_PLATFORM_XS))
     {
       Status = EFI_SUCCESS;
     } else {
