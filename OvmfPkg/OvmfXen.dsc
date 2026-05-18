@@ -32,6 +32,8 @@
   #
   DEFINE SOURCE_DEBUG_ENABLE     = FALSE
 
+!include OvmfPkg/Include/Dsc/OvmfTpmDefines.dsc.inc
+
   #
   # Shell can be useful for debugging but should not be enabled for production
   #
@@ -220,8 +222,6 @@
   XenPlatformLib|OvmfPkg/Library/XenPlatformLib/XenPlatformLib.inf
   XenIoMmioLib|OvmfPkg/Library/XenIoMmioLib/XenIoMmioLib.inf
 
-  Tcg2PhysicalPresenceLib|OvmfPkg/Library/Tcg2PhysicalPresenceLibNull/DxeTcg2PhysicalPresenceLib.inf
-  TpmMeasurementLib|MdeModulePkg/Library/TpmMeasurementLibNull/TpmMeasurementLibNull.inf
   RealTimeClockLib|OvmfPkg/Library/XenRealTimeClockLib/XenRealTimeClockLib.inf
   TimeBaseLib|EmbeddedPkg/Library/TimeBaseLib/TimeBaseLib.inf
 !ifdef $(DEBUG_ON_HYPERVISOR_CONSOLE)
@@ -229,6 +229,8 @@
 !else
   DebugLib|OvmfPkg/Library/PlatformDebugLibIoPort/PlatformDebugLibIoPort.inf
 !endif
+
+!include OvmfPkg/Include/Dsc/OvmfTpmLibs.dsc.inc
 
 [LibraryClasses.common]
   AmdSvsmLib|UefiCpuPkg/Library/AmdSvsmLibNull/AmdSvsmLibNull.inf
@@ -508,6 +510,11 @@
 
 !include OvmfPkg/Include/Dsc/OvmfDisplayPcds.dsc.inc
 
+!include OvmfPkg/Include/Dsc/OvmfTpmPcds.dsc.inc
+
+[PcdsDynamicHii]
+!include OvmfPkg/Include/Dsc/OvmfTpmPcdsHii.dsc.inc
+
 ################################################################################
 #
 # Components Section - list of all EDK II Modules needed by this Platform.
@@ -546,6 +553,8 @@
   UefiCpuPkg/Universal/Acpi/S3Resume2Pei/S3Resume2Pei.inf
   UefiCpuPkg/CpuMpPei/CpuMpPei.inf
 
+!include OvmfPkg/Include/Dsc/OvmfTpmComponentsPei.dsc.inc
+
   #
   # DXE Phase modules
   #
@@ -564,7 +573,13 @@
 
   MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
 
-  MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf
+  MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf {
+    <LibraryClasses>
+!if $(SECURE_BOOT_ENABLE) == TRUE
+      NULL|SecurityPkg/Library/DxeImageVerificationLib/DxeImageVerificationLib.inf
+!include OvmfPkg/Include/Dsc/OvmfTpmSecurityStub.dsc.inc
+!endif
+  }
 
   MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
   OvmfPkg/LocalApicTimerDxe/LocalApicTimerDxe.inf
@@ -718,3 +733,8 @@
     <LibraryClasses>
       NULL|MdeModulePkg/Library/VarCheckUefiLib/VarCheckUefiLib.inf
   }
+
+  #
+  # TPM support
+  #
+!include OvmfPkg/Include/Dsc/OvmfTpmComponentsDxe.dsc.inc
