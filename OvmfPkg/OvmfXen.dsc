@@ -239,6 +239,11 @@
 
 !include OvmfPkg/Include/Dsc/OvmfTpmLibs.dsc.inc
 
+# Override Tcg2PhysicalPresenceLib that's already in OvmfTpmLibs.dsc.inc
+!if $(XEN_VARIABLE_ENABLE) == TRUE && $(TPM2_ENABLE) == TRUE
+  Tcg2PhysicalPresenceLib|OvmfPkg/Library/Tcg2PhysicalPresenceLibXen/DxeTcg2PhysicalPresenceLib.inf
+!endif
+
 [LibraryClasses.common]
   AmdSvsmLib|UefiCpuPkg/Library/AmdSvsmLibNull/AmdSvsmLibNull.inf
   BaseCryptLib|CryptoPkg/Library/BaseCryptLib/BaseCryptLib.inf
