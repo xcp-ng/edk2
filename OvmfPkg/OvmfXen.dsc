@@ -480,6 +480,9 @@
   #
   gUefiCpuPkgTokenSpaceGuid.PcdFirstTimeWakeUpAPsBySipi|FALSE
 
+  # Xen provides Rev 4 of the TPM2 ACPI table
+  gEfiSecurityPkgTokenSpaceGuid.PcdTpm2AcpiTableRev|4
+
 ################################################################################
 #
 # Pcd Dynamic Section - list of all EDK II PCD Entries defined by this Platform
