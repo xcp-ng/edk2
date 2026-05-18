@@ -25,6 +25,15 @@
   PCI_LIB_ADDRESS (0, 0, 0, PCI_DEVICE_ID_OFFSET)
 
 //
+// Intel GVT-g changes Device ID of the Host Bridge for its drivers.
+// Fake the original Device ID for OVMF.
+//
+#define PciRead16(Address) \
+ ((Address == OVMF_HOSTBRIDGE_DID && \
+   PciRead16(Address) != INTEL_Q35_MCH_DEVICE_ID) ? \
+       INTEL_82441_DEVICE_ID : PciRead16(Address))
+
+//
 // Values we program into the PM base address registers
 //
 #define PIIX4_PMBA_VALUE   0xB000
