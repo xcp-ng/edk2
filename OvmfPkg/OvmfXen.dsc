@@ -790,3 +790,5 @@
   # TPM support
   #
 !include OvmfPkg/OvmfTpmComponentsDxe.dsc.inc
+
+  SecurityPkg/RandomNumberGenerator/RngDxe/RngDxe.inf
