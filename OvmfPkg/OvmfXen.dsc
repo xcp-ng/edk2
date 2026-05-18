@@ -32,6 +32,7 @@
   #
   DEFINE SOURCE_DEBUG_ENABLE     = FALSE
   DEFINE BGRT_ENABLE             = TRUE
+  DEFINE IPXE_ENABLE             = FALSE
 
 !include OvmfPkg/Include/Dsc/OvmfTpmDefines.dsc.inc
 
