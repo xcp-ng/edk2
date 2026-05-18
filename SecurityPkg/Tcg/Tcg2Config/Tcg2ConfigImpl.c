@@ -986,6 +986,13 @@ InstallTcg2ConfigForm (
     }
   }
 
+  Tcg2ConfigInfo.TpmConfigVersionSupported = FALSE;
+  Tcg2ConfigInfo.TpmConfigPpiVersionSupported = FALSE;
+  Tcg2ConfigInfo.ChangePpiManagementFlagsSupported = TRUE;
+  Tcg2ConfigInfo.ChangeAcpiRevSupported = FALSE;
+  Tcg2ConfigInfo.ChangeEnabledStateSupported = FALSE;
+  Tcg2ConfigInfo.ChangeEndorsementSupported = FALSE;
+
   //
   // Set ConfigInfo, to control the check box.
   //
