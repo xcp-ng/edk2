@@ -398,6 +398,8 @@
   # messages will be overwritten by more recent messages.
   gUefiOvmfPkgTokenSpaceGuid.PcdMemDebugLogPages|32|UINT32|0x7c
 
+  gUefiOvmfPkgTokenSpaceGuid.PcdOvmfShadowPeiBase|0x0|UINT32|0x88
+
 [PcdsDynamic, PcdsDynamicEx]
   gUefiOvmfPkgTokenSpaceGuid.PcdEmuVariableEvent|0|UINT64|2
   gUefiOvmfPkgTokenSpaceGuid.PcdOvmfFlashVariablesEnable|FALSE|BOOLEAN|0x10
