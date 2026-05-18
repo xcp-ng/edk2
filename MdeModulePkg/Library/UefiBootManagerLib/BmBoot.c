@@ -2115,8 +2115,9 @@ EfiBootManagerBoot (
 
   REPORT_STATUS_CODE (EFI_PROGRESS_CODE, PcdGet32 (PcdProgressCodeOsLoaderStart));
 
+  DEBUG ((DEBUG_ERROR, "About to call StartImage (0x%p)\n", ImageHandle));
   Status = gBS->StartImage (ImageHandle, &BootOption->ExitDataSize, &BootOption->ExitData);
-  DEBUG ((DEBUG_INFO | DEBUG_LOAD, "Image Return Status = %r\n", Status));
+  DEBUG ((DEBUG_ERROR | DEBUG_LOAD, "Image Return Status = %r\n", Status));
   BootOption->Status = Status;
 
   //
