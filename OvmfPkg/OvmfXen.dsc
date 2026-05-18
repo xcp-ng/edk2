@@ -33,6 +33,7 @@
   DEFINE SOURCE_DEBUG_ENABLE     = FALSE
   DEFINE BGRT_ENABLE             = TRUE
   DEFINE IPXE_ENABLE             = FALSE
+  DEFINE XEN_VARIABLE_ENABLE     = FALSE
 
 !include OvmfPkg/Include/Dsc/OvmfTpmDefines.dsc.inc
 
@@ -203,7 +204,9 @@
   RngLib|MdeModulePkg/Library/BaseRngLibTimerLib/BaseRngLibTimerLib.inf
 
   AuthVariableLib|MdeModulePkg/Library/AuthVariableLibNull/AuthVariableLibNull.inf
+!if $(XEN_VARIABLE_ENABLE) == FALSE
   VarCheckLib|MdeModulePkg/Library/VarCheckLib/VarCheckLib.inf
+!endif
   VariablePolicyLib|MdeModulePkg/Library/VariablePolicyLib/VariablePolicyLib.inf
   VariablePolicyHelperLib|MdeModulePkg/Library/VariablePolicyHelperLib/VariablePolicyHelperLib.inf
   VariableFlashInfoLib|MdeModulePkg/Library/BaseVariableFlashInfoLib/BaseVariableFlashInfoLib.inf
@@ -728,6 +731,9 @@
   #
   # Variable driver stack (non-SMM)
   #
+!if $(XEN_VARIABLE_ENABLE) == TRUE
+  OvmfPkg/XenVariable/XenVariable.inf
+!else
   OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
   OvmfPkg/EmuVariableFvbRuntimeDxe/Fvb.inf {
     <LibraryClasses>
@@ -738,6 +744,7 @@
     <LibraryClasses>
       NULL|MdeModulePkg/Library/VarCheckUefiLib/VarCheckUefiLib.inf
   }
+!endif
 
   #
   # TPM support
