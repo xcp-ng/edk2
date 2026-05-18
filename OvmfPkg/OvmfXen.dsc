@@ -31,6 +31,7 @@
   # -D FLAG=VALUE
   #
   DEFINE SOURCE_DEBUG_ENABLE     = FALSE
+  DEFINE BGRT_ENABLE             = TRUE
 
 !include OvmfPkg/Include/Dsc/OvmfTpmDefines.dsc.inc
 
@@ -681,7 +682,9 @@
   OvmfPkg/XenAcpiPlatformDxe/XenAcpiPlatformDxe.inf
   MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
   MdeModulePkg/Universal/Acpi/BootScriptExecutorDxe/BootScriptExecutorDxe.inf
+!if $(BGRT_ENABLE) == TRUE
   MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
+!endif
 
   #
   # Hash2 Protocol producer
