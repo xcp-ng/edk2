@@ -771,7 +771,7 @@ CoreConvertPagesEx (
     }
 
     if (Link == &gMemoryMap) {
-      DEBUG ((DEBUG_ERROR | DEBUG_PAGE, "ConvertPages: failed to find range %lx - %lx\n", Start, End));
+      DEBUG ((DEBUG_WARN | DEBUG_PAGE, "ConvertPages: failed to find range %lx - %lx\n", Start, End));
       return EFI_NOT_FOUND;
     }
 
@@ -782,7 +782,7 @@ CoreConvertPagesEx (
     //
     if (ChangingType && (NewType != EfiConventionalMemory)) {
       if (Entry->End < End) {
-        DEBUG ((DEBUG_ERROR | DEBUG_PAGE, "ConvertPages: range %lx - %lx covers multiple entries\n", Start, End));
+        DEBUG ((DEBUG_WARN | DEBUG_PAGE, "ConvertPages: range %lx - %lx covers multiple entries\n", Start, End));
         return EFI_NOT_FOUND;
       }
     }
