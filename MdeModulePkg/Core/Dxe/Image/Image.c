@@ -1750,7 +1750,11 @@ CoreStartImage (
     //
     DEBUG_CODE_BEGIN ();
     if (EFI_ERROR (Image->Status)) {
-      DEBUG ((DEBUG_ERROR, "Error: Image at %11p start failed: %r\n", Image->Info.ImageBase, Image->Status));
+      if (Image->Status == EFI_UNSUPPORTED) {
+        DEBUG ((DEBUG_WARN, "Error: Image at %11p start failed: %r\n", Image->Info.ImageBase, Image->Status));
+      } else {
+        DEBUG ((DEBUG_ERROR, "Error: Image at %11p start failed: %r\n", Image->Info.ImageBase, Image->Status));
+      }
     }
 
     DEBUG_CODE_END ();
