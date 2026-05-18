@@ -32,6 +32,8 @@
   #
   DEFINE SOURCE_DEBUG_ENABLE     = FALSE
 
+!include OvmfPkg/OvmfTpmDefines.dsc.inc
+
   #
   # Network definition
   #
@@ -219,8 +221,6 @@
   XenPlatformLib|OvmfPkg/Library/XenPlatformLib/XenPlatformLib.inf
   XenIoMmioLib|OvmfPkg/Library/XenIoMmioLib/XenIoMmioLib.inf
 
-  Tcg2PhysicalPresenceLib|OvmfPkg/Library/Tcg2PhysicalPresenceLibNull/DxeTcg2PhysicalPresenceLib.inf
-  TpmMeasurementLib|MdeModulePkg/Library/TpmMeasurementLibNull/TpmMeasurementLibNull.inf
   RealTimeClockLib|OvmfPkg/Library/XenRealTimeClockLib/XenRealTimeClockLib.inf
   TimeBaseLib|EmbeddedPkg/Library/TimeBaseLib/TimeBaseLib.inf
 !ifdef $(DEBUG_ON_HYPERVISOR_CONSOLE)
@@ -228,6 +228,8 @@
 !else
   DebugLib|OvmfPkg/Library/PlatformDebugLibIoPort/PlatformDebugLibIoPort.inf
 !endif
+
+!include OvmfPkg/OvmfTpmLibs.dsc.inc
 
 [LibraryClasses.common]
   BaseCryptLib|CryptoPkg/Library/BaseCryptLib/BaseCryptLib.inf
@@ -507,6 +509,11 @@
 
   gEfiSecurityPkgTokenSpaceGuid.PcdOptionRomImageVerificationPolicy|0x00
 
+!include OvmfPkg/OvmfTpmPcds.dsc.inc
+
+[PcdsDynamicHii]
+!include OvmfPkg/OvmfTpmPcdsHii.dsc.inc
+
 ################################################################################
 #
 # Components Section - list of all EDK II Modules needed by this Platform.
@@ -545,6 +552,8 @@
   UefiCpuPkg/Universal/Acpi/S3Resume2Pei/S3Resume2Pei.inf
   UefiCpuPkg/CpuMpPei/CpuMpPei.inf
 
+!include OvmfPkg/OvmfTpmComponentsPei.dsc.inc
+
   #
   # DXE Phase modules
   #
@@ -563,7 +572,13 @@
 
   MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
 
-  MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf
+  MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf {
+    <LibraryClasses>
+!if $(SECURE_BOOT_ENABLE) == TRUE
+      NULL|SecurityPkg/Library/DxeImageVerificationLib/DxeImageVerificationLib.inf
+!include OvmfPkg/OvmfTpmSecurityStub.dsc.inc
+!endif
+  }
 
   MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
   OvmfPkg/LocalApicTimerDxe/LocalApicTimerDxe.inf
@@ -767,3 +782,8 @@
     <LibraryClasses>
       NULL|MdeModulePkg/Library/VarCheckUefiLib/VarCheckUefiLib.inf
   }
+
+  #
+  # TPM support
+  #
+!include OvmfPkg/OvmfTpmComponentsDxe.dsc.inc
