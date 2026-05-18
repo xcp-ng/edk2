@@ -45,9 +45,9 @@
   Hash/CryptDispatchApMm.c
   Hmac/CryptHmac.c
   Kdf/CryptHkdf.c
-  Cipher/CryptAes.c
+  Cipher/CryptAesNull.c
   Cipher/CryptAeadAesGcmNull.c
-  Cipher/CryptCamellia.c
+  Cipher/CryptCamelliaNull.c
   Pk/CryptRsaBasic.c
   Pk/CryptRsaExt.c
   Pk/CryptPkcs1Oaep.c
