@@ -1,0 +1,51 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = XenVariable
+  FILE_GUID                      = 3984EE42-976A-46C5-8A64-23FB340035BC
+  MODULE_TYPE                    = DXE_RUNTIME_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = VariableServiceInitialize
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  OvmfPkg/OvmfPkg.dec
+
+[Sources]
+  XenVariable.h
+  XenVariable.c
+
+[LibraryClasses]
+  PcdLib
+  BaseMemoryLib
+  BaseLib
+  UefiBootServicesTableLib
+  UefiRuntimeLib
+  DebugLib
+  UefiLib
+  HobLib
+  DxeServicesTableLib
+  DevicePathLib
+  UefiDriverEntryPoint
+  MemoryAllocationLib
+  SynchronizationLib
+  PciLib
+
+[Guids]
+  gEfiEventVirtualAddressChangeGuid             ## CONSUMES             ## Event
+  gEfiVariableGuid
+  gEfiGlobalVariableGuid                        ## PRODUCES ## Variable Guid
+
+[Protocols]
+  gEfiVariableArchProtocolGuid
+  gEfiVariableWriteArchProtocolGuid
+
+[Pcd]
+  gEfiMdeModulePkgTokenSpaceGuid.PcdMaxVariableSize
+  gEfiMdeModulePkgTokenSpaceGuid.PcdMaxHardwareErrorVariableSize
+  gEfiMdeModulePkgTokenSpaceGuid.PcdVariableStoreSize
+  gEfiMdeModulePkgTokenSpaceGuid.PcdHwErrStorageSize
+  gUefiOvmfPkgTokenSpaceGuid.PcdOvmfFlashVariablesEnable
+
+[Depex]
+  TRUE
