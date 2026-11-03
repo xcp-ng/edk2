@@ -252,11 +252,14 @@ RuntimeDriverSetVirtualAddressMap (
   LIST_ENTRY               *Link;
   EFI_PHYSICAL_ADDRESS     VirtImageBase;
 
+  DEBUG ((DEBUG_ERROR, "SetVirtualAddressMap -> (0x%lx, 0x%lx, 0x%x)\n", MemoryMapSize, DescriptorSize, DescriptorVersion));
+
   //
   // Can only switch to virtual addresses once the memory map is locked down,
   // and can only set it once
   //
   if (!mRuntime.AtRuntime || mRuntime.VirtualMode) {
+    DEBUG ((DEBUG_ERROR, "SetVirtualAddressMap <- (%r)\n", EFI_UNSUPPORTED));
     return EFI_UNSUPPORTED;
   }
 
@@ -264,6 +267,7 @@ RuntimeDriverSetVirtualAddressMap (
   // Only understand the original descriptor format
   //
   if ((DescriptorVersion != EFI_MEMORY_DESCRIPTOR_VERSION) || (DescriptorSize < sizeof (EFI_MEMORY_DESCRIPTOR))) {
+    DEBUG ((DEBUG_ERROR, "SetVirtualAddressMap <- (%r)\n", EFI_INVALID_PARAMETER));
     return EFI_INVALID_PARAMETER;
   }
 
@@ -375,6 +379,8 @@ RuntimeDriverSetVirtualAddressMap (
   //
   mVirtualMap         = NULL;
   mVirtualMapMaxIndex = 0;
+
+  DEBUG ((DEBUG_ERROR, "SetVirtualAddressMap <- (%r)\n", EFI_SUCCESS));
 
   return EFI_SUCCESS;
 }

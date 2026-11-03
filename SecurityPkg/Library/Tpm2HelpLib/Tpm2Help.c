@@ -324,7 +324,7 @@ Tpm2CopyDigestListToBuffer (
   Buffer             = (UINT8 *)Buffer + sizeof (DigestList->count);
   for (Index = 0; Index < DigestList->count; Index++) {
     if (!Tpm2IsHashAlgSupportedInHashAlgorithmMask (DigestList->digests[Index].hashAlg, HashAlgorithmMask)) {
-      DEBUG ((DEBUG_ERROR, "WARNING: TPM2 Event log has HashAlg unsupported by PCR bank (0x%x)\n", DigestList->digests[Index].hashAlg));
+      DEBUG ((DEBUG_INFO, "WARNING: TPM2 Event log has HashAlg unsupported by PCR bank (0x%x)\n", DigestList->digests[Index].hashAlg));
       continue;
     }
 

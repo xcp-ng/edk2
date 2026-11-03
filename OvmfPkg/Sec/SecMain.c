@@ -24,6 +24,7 @@
 #include <Library/PeCoffExtraActionLib.h>
 #include <Library/ExtractGuidedSectionLib.h>
 #include <Library/LocalApicLib.h>
+#include <Library/MtrrLib.h>
 #include <Library/CpuExceptionHandlerLib.h>
 #include <Ppi/TemporaryRamSupport.h>
 #include <Ppi/MpInitLibDep.h>
@@ -353,6 +354,7 @@ DecompressMemFvs (
   EFI_FIRMWARE_VOLUME_HEADER  *DxeMemFv;
   UINT32                      FvHeaderSize;
   UINT32                      FvSectionSize;
+  UINT32                      ShadowPeiBase;
 
   FvSection = (EFI_COMMON_SECTION_HEADER *)NULL;
 
@@ -428,6 +430,14 @@ DecompressMemFvs (
 
   PeiMemFv = (EFI_FIRMWARE_VOLUME_HEADER *)(UINTN)PcdGet32 (PcdOvmfPeiMemFvBase);
   CopyMem (PeiMemFv, (VOID *)(FvSection + 1), PcdGet32 (PcdOvmfPeiMemFvSize));
+
+  ShadowPeiBase = PcdGet32 (PcdOvmfShadowPeiBase);
+  if (ShadowPeiBase) {
+    //
+    // Stash pristine PEI FV for later for consistent PCR0 measurments
+    //
+    CopyMem ((VOID*) (UINTN) ShadowPeiBase, PeiMemFv, PcdGet32 (PcdOvmfPeiMemFvSize));
+  }
 
   if (PeiMemFv->Signature != EFI_FVH_SIGNATURE) {
     DEBUG ((DEBUG_ERROR, "Extracted FV at %p does not have FV header signature\n", PeiMemFv));
@@ -1014,8 +1024,20 @@ SecStartupPhase2 (
   EFI_FIRMWARE_VOLUME_HEADER  *BootFv;
   EFI_PEI_CORE_ENTRY_POINT    PeiCoreEntryPoint;
   EFI_PEI_PPI_DESCRIPTOR      *EfiPeiPpiDescriptor;
+  MTRR_SETTINGS               SavedMtrrSettings;
+  MTRR_SETTINGS               MtrrSettings;
 
   SecCoreData = (EFI_SEC_PEI_HAND_OFF *)Context;
+
+  //
+  // Temporary make all memory above 1MB WB cacheable during FV decompression.
+  // Restore the original settings back right before jumping into PEI Core.
+  //
+  MtrrGetAllMtrrs (&SavedMtrrSettings);
+  CopyMem (&MtrrSettings, &SavedMtrrSettings, sizeof MtrrSettings);
+  ZeroMem (&MtrrSettings.Variables, sizeof MtrrSettings.Variables);
+  MtrrSettings.MtrrDefType = (MtrrSettings.MtrrDefType & ~0xff) | MTRR_CACHE_WRITE_BACK;
+  MtrrSetAllMtrrs (&MtrrSettings);
 
   //
   // Find PEI Core entry point. It will report SEC and Pei Core debug information if remote debug
@@ -1035,6 +1057,8 @@ SecStartupPhase2 (
   } else {
     EfiPeiPpiDescriptor = (EFI_PEI_PPI_DESCRIPTOR *)&mPrivateDispatchTableMp;
   }
+
+  MtrrSetAllMtrrs (&SavedMtrrSettings);
 
   //
   // Transfer the control to the PEI core

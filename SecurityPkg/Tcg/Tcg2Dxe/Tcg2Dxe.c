@@ -1110,7 +1110,7 @@ CopyDigestListBinToBuffer (
       DigestListCount++;
       (*HashAlgorithmMaskCopied) |= Tpm2GetHashMaskFromAlgo (HashAlg);
     } else {
-      DEBUG ((DEBUG_ERROR, "WARNING: CopyDigestListBinToBuffer Event log has HashAlg unsupported by PCR bank (0x%x)\n", HashAlg));
+      DEBUG ((DEBUG_INFO, "WARNING: CopyDigestListBinToBuffer Event log has HashAlg unsupported by PCR bank (0x%x)\n", HashAlg));
     }
 
     DigestListBin = (UINT8 *)DigestListBin + DigestSize;

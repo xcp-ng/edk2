@@ -70,6 +70,12 @@ typedef struct {
   BOOLEAN    TpmDeviceInterfacePtpFifoSupported;
   BOOLEAN    TpmDeviceInterfacePtpCrbSupported;
   BOOLEAN    ChangeEPSSupported;
+  BOOLEAN  TpmConfigVersionSupported;
+  BOOLEAN  TpmConfigPpiVersionSupported;
+  BOOLEAN  ChangePpiManagementFlagsSupported;
+  BOOLEAN  ChangeAcpiRevSupported;
+  BOOLEAN  ChangeEnabledStateSupported;
+  BOOLEAN  ChangeEndorsementSupported;
 } TCG2_CONFIGURATION_INFO;
 
 //

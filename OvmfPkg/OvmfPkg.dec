@@ -105,6 +105,10 @@
   #
   QemuLoadImageLib|Include/Library/QemuLoadImageLib.h
 
+  ##  @libraryclass  Rewrite the BootOrder Var based on CMOS order set by QEMU.
+  #
+  XenBootOrderLib|Include/Library/XenBootOrderLib.h
+
   ##  @libraryclass  Serialize (and deserialize) variables
   #
   SerializeVariablesLib|Include/Library/SerializeVariablesLib.h
@@ -397,6 +401,8 @@
   # The buffer is circular. So, if size is exceeded, older
   # messages will be overwritten by more recent messages.
   gUefiOvmfPkgTokenSpaceGuid.PcdMemDebugLogPages|32|UINT32|0x7c
+
+  gUefiOvmfPkgTokenSpaceGuid.PcdOvmfShadowPeiBase|0x0|UINT32|0x88
 
 [PcdsDynamic, PcdsDynamicEx]
   gUefiOvmfPkgTokenSpaceGuid.PcdEmuVariableEvent|0|UINT64|2

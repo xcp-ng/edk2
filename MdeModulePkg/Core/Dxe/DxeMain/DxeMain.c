@@ -779,6 +779,8 @@ CoreExitBootServices (
 {
   EFI_STATUS  Status;
 
+  DEBUG ((DEBUG_ERROR, "ExitBootServices -> (0x%p, 0x%lx)\n", ImageHandle, MapKey));
+
   //
   // Notify other drivers of their last chance to use boot services
   // before the memory map is terminated.
@@ -802,6 +804,7 @@ CoreExitBootServices (
     // Notify other drivers that ExitBootServices fail
     //
     CoreNotifySignalList (&gEventExitBootServicesFailedGuid);
+    DEBUG ((DEBUG_ERROR, "ExitBootServices <- (%r)\n", Status));
     return Status;
   }
 
@@ -858,6 +861,8 @@ CoreExitBootServices (
   // Update the AtRuntime field in Runtiem AP.
   //
   gRuntime->AtRuntime = TRUE;
+
+  DEBUG ((DEBUG_ERROR, "ExitBootServices <- (%r)\n", Status));
 
   return Status;
 }
